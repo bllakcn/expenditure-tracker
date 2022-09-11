@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react'
+import { useSignup } from '../../hooks/useSignup'
 
 import styles from './Signup.module.css'
 
 export default function Signup() {
-  const [name, setName] = useState('')
+  const [displayName, setDisplayName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [matchPassword , setMatchPassword] = useState(false)
+  const {signup, isPending, error} = useSignup()
   
   useEffect(()=>{
     if(confirmPassword === password || confirmPassword.length < password.length/2){
@@ -20,7 +22,7 @@ export default function Signup() {
   const handleSubmit = (e) => {
     e.preventDefault()
     if(matchPassword)
-    console.log(name,email,password)
+    signup(email, password, displayName)
   }
 
   return (
@@ -30,8 +32,8 @@ export default function Signup() {
       <span>display name:</span>
       <input
         type="text"
-        onChange={(e) => setName(e.target.value)}  
-        value={name}
+        onChange={(e) => setDisplayName(e.target.value)}  
+        value={displayName}
       />
     </label>
     <label>
@@ -58,7 +60,9 @@ export default function Signup() {
         value={confirmPassword}
       />
     </label>
-    <button className='btn'>Signup</button>
+    {!isPending && <button className='btn'>Signup</button>}
+    {isPending && <button className='btn' disabled>Loading</button>}
+    {error && <p>{error}</p>}
   </form>
   )
 }
